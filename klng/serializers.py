@@ -9,19 +9,19 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True
     )
 
-    portfolio_url = serializers.ModelSerializer.serializer_url_field(
+    project_url = serializers.ModelSerializer.serializer_url_field(
         view_name='portfolio_detail')
 
     class Meta:
         model = User
         fields = (
-            'id','portfolio_url','portfolio' ,'user_name', 'email', 'password')
+            'id','project_url','portfolio' ,'user_name', 'email', 'password')
 
 # portfolio serializer
 class PortfolioSerializer(serializers.HyperlinkedModelSerializer):
-    projects = serializers.HyperlinkedRelatedField(
+    project = serializers.HyperlinkedRelatedField(
         view_name='project_detail',
-        many = False,
+        many = True,
         read_only=True
     )
 
@@ -30,7 +30,7 @@ class PortfolioSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Portfolio
-        fields = ('id','name', 'about', 'github_link','linkedin_link','image_url','project_url','projects') 
+        fields = ('id','name', 'about', 'github_link','linkedin_link','image_url','project_url','project') 
 
 #Project serializer
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
