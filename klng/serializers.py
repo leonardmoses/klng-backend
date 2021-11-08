@@ -1,44 +1,36 @@
 from rest_framework import serializers
 from .models import User, Portfolio, Project
-from django.contrib.auth.hashers import make_password
+# from django.contrib.auth.hashers import make_password
 
 #users serializer
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    
-    def create(self, validated_data):
-        users = User.objects.create_user(
-            password=make_password(
-                validated_data['user_name'].pop('password')
-            ),
-            **validated_data.pop('user_name')
-        )
+    portfolio = serializers.HyperlinkedRelatedField(
+        view_name='portfolio_detail',
+        read_only=True
+    )
 
-    def update(self, instance, validated_data):
-        if 'user_name' in validated_data:
-            instance.users.password = make_password(
-                validated_data.get('user_name').get('password', instance.user.password)
-            )
-            instance.users.save()
+    project_url = serializers.ModelSerializer.serializer_url_field(
+        view_name='portfolio_detail')
 
     class Meta:
         model = User
         fields = (
-            'id', 'user_name', 'email', 'password')
+            'id','project_url','portfolio' ,'user_name', 'email', 'password')
 
 # portfolio serializer
 class PortfolioSerializer(serializers.HyperlinkedModelSerializer):
-    projects = serializers.HyperlinkedRelatedField(
+    project = serializers.HyperlinkedRelatedField(
         view_name='project_detail',
         many = True,
         read_only=True
     )
 
-    portfolio_url = serializers.ModelSerializer.serializer_url_field(
-        view_name='portfolio_detail')
+    project_url = serializers.ModelSerializer.serializer_url_field(
+        view_name='project_detail')
 
     class Meta:
         model = Portfolio
-        fields = ('id','name', 'about', 'github_link','linkedin_link','image_url','portfolio_url','projects') 
+        fields = ('id','name', 'about', 'github_link','linkedin_link','image_url','project_url','project') 
 
 #Project serializer
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
@@ -49,7 +41,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 
     portfolio_id = serializers.PrimaryKeyRelatedField(
         queryset=Portfolio.objects.all(),
-        source='name'    
+        source='portfolio'    
         )
 
     class Meta:
