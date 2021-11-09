@@ -11,7 +11,7 @@ class User(models.Model):
         return self.user_name
 
 class Portfolio(models.Model):
-    user_name = models.ForeignKey(User, on_delete=models.CASCADE, related_name='portfolio', null=True)
+    user_name = models.OneToOneField(User, on_delete=models.CASCADE, related_name='portfolio', null=True)
     name = models.CharField(max_length=100, default='No name')
     about = models.CharField(max_length=400, default='No info about me')
     github_link = models.CharField(max_length=200, null=True)
